@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>gvex - Mini App</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background: radial-gradient(circle at top, #1e1b4b, #09090b);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+  </style>
+</head>
+<body class="text-white min-h-screen pb-24 selection:bg-indigo-500 selection:text-white">
+
+  <!-- Top App Bar -->
+  <header class="p-4 flex justify-between items-center border-b border-zinc-850 bg-black/40 backdrop-blur-md sticky top-0 z-50">
+    <div class="flex items-center space-x-2">
+      <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-indigo-500 to-cyan-400 flex items-center justify-center font-black text-black">G</div>
+      <span class="font-bold tracking-wider text-lg text-indigo-300">gvex</span>
+    </div>
+    <div id="user-pill" class="text-xs bg-zinc-800/80 px-3 py-1.5 rounded-full border border-zinc-700 text-zinc-300">
+      Loading...
+    </div>
+  </header>
+
+  <!-- Main Content Area -->
+  <main class="p-4 space-y-4 max-w-md mx-auto">
+    
+    <!-- Balance Card -->
+    <div class="bg-gradient-to-br from-zinc-900 to-zinc-950 border border-zinc-800 p-5 rounded-2xl shadow-xl text-center relative overflow-hidden">
+      <div class="absolute -top-10 -right-10 w-28 h-28 bg-indigo-500/10 rounded-full blur-2xl"></div>
+      <p class="text-xs uppercase tracking-widest text-zinc-400">Total Portfolio Balance</p>
+      <h1 class="text-4xl font-extrabold mt-2 text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-cyan-300 to-white" id="balance">0.00</h1>
+      <p class="text-xs text-emerald-400 font-medium mt-1">● Active Account</p>
+      
+      <div class="grid grid-cols-2 gap-2 mt-4 pt-4 border-t border-zinc-850">
+        <div>
+          <span class="text-[11px] text-zinc-400 block">Today's Earnings</span>
+          <span class="text-sm font-semibold text-zinc-200" id="today-earning">+0.00</span>
+        </div>
+        <div>
+          <span class="text-[11px] text-zinc-400 block">Total Referrals</span>
+          <span class="text-sm font-semibold text-zinc-200" id="ref-count">0</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Action: Daily Check-in / Task -->
+    <div class="bg-zinc-900/90 border border-zinc-800 p-4 rounded-xl flex items-center justify-between">
+      <div>
+        <h3 class="font-semibold text-sm">Daily Reward Claim</h3>
+        <p class="text-xs text-zinc-400">Claim your 10.00 daily bonus</p>
+      </div>
+      <button id="claim-btn" onclick="claimDailyBonus()" class="bg-indigo-600 hover:bg-indigo-500 active:scale-95 px-4 py-2 rounded-lg text-xs font-bold transition">
+        Claim
+      </button>
+    </div>
+
+    <!-- Referral Link Box -->
+    <div class="bg-zinc-900/90 border border-zinc-850 p-4 rounded-xl space-y-2">
+      <div class="flex justify-between items-center">
+        <h3 class="font-semibold text-sm">Invite & Earn</h3>
+        <span class="text-[11px] text-indigo-400 font-medium">10% Commission</span>
+      </div>
+      <p class="text-xs text-zinc-400">Share your link to invite new members to gvex.</p>
+      <div class="flex gap-2">
+        <input type="text" id="ref-link" readonly class="w-full bg-black/60 border border-zinc-800 text-xs px-3 py-2 rounded-lg text-zinc-400 font-mono select-all focus:outline-none" value="https://t.me/gvex_bot?start=..." />
+        <button onclick="copyRefLink()" class="bg-zinc-800 hover:bg-zinc-700 px-3 py-2 rounded-lg text-xs font-semibold whitespace-nowrap active:scale-95 border border-zinc-700">
+          Copy
+        </button>
+      </div>
+    </div>
+
+    <!-- Payout / Action Buttons -->
+    <div class="grid grid-cols-2 gap-3">
+      <button onclick="alert('Deposit modal will connect to payment gateway')" class="bg-zinc-850 border border-zinc-700 hover:bg-zinc-800 p-3 rounded-xl text-center active:scale-95 transition">
+        <span class="block text-xs text-zinc-400">Add Balance</span>
+        <span class="text-sm font-bold text-white">Deposit</span>
+      </button>
+      <button onclick="requestWithdrawal()" class="bg-indigo-950/40 border border-indigo-700/50 hover:bg-indigo-900/30 p-3 rounded-xl text-center active:scale-95 transition">
+        <span class="block text-xs text-indigo-300">Fast Payout</span>
+        <span class="text-sm font-bold text-white">Withdraw</span>
+      </button>
+    </div>
+
+  </main>
+
+  <!-- Bottom Nav Bar -->
+  <nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-black/80 backdrop-blur-lg border-t border-zinc-850 flex justify-around py-2.5 z-50 text-[11px]">
+    <button class="flex flex-col items-center text-indigo-400 font-semibold">
+      <span>Dashboard</span>
+    </button>
+    <button onclick="alert('Tasks section opening soon')" class="flex flex-col items-center text-zinc-400 hover:text-zinc-200">
+      <span>Tasks</span>
+    </button>
+    <button onclick="copyRefLink()" class="flex flex-col items-center text-zinc-400 hover:text-zinc-200">
+      <span>Friends</span>
+    </button>
+    <button onclick="requestWithdrawal()" class="flex flex-col items-center text-zinc-400 hover:text-zinc-200">
+      <span>Wallet</span>
+    </button>
+  </nav>
+
+  <script>
+    const tg = window.Telegram?.WebApp;
+    if (tg) {
+      tg.ready();
+      tg.expand();
+    }
+
+    // Load Telegram User Info
+    const user = tg?.initDataUnsafe?.user || { id: "1001", first_name: "Demo User", username: "demouser" };
+    document.getElementById('user-pill').textContent = `@${user.username || user.first_name}`;
+    
+    // Set Dynamic Referral Link
+    const botUsername = "gvex_bot"; // Apne BotFather username se replace karein
+    const userRefLink = `https://t.me/${botUsername}?start=ref_${user.id}`;
+    document.getElementById('ref-link').value = userRefLink;
+
+    // Load Local Storage / Defaults
+    let balance = parseFloat(localStorage.getItem('gvex_balance') || "0.00");
+    let todayEarning = parseFloat(localStorage.getItem('gvex_today') || "0.00");
+    updateUI();
+
+    function updateUI() {
+      document.getElementById('balance').textContent = balance.toFixed(2);
+      document.getElementById('today-earning').textContent = `+${todayEarning.toFixed(2)}`;
+    }
+
+    function claimDailyBonus() {
+      const btn = document.getElementById('claim-btn');
+      balance += 10.0;
+      todayEarning += 10.0;
+      localStorage.setItem('gvex_balance', balance);
+      localStorage.setItem('gvex_today', todayEarning);
+      updateUI();
+      
+      btn.disabled = true;
+      btn.textContent = "Claimed";
+      btn.className = "bg-zinc-800 text-zinc-500 px-4 py-2 rounded-lg text-xs font-bold cursor-not-allowed";
+      
+      if (tg?.HapticFeedback) {
+        tg.HapticFeedback.notificationOccurred('success');
+      }
+    }
+
+    function copyRefLink() {
+      const input = document.getElementById('ref-link');
+      input.select();
+      navigator.clipboard.writeText(input.value);
+      alert("Referral link copied to clipboard!");
+    }
+
+    function requestWithdrawal() {
+      if (balance < 50) {
+        alert("Minimum withdrawal limit is 50.00. Current balance: " + balance.toFixed(2));
+      } else {
+        alert("Withdrawal request submitted for review.");
+      }
+    }
+  </script>
+</body>
+</html>
